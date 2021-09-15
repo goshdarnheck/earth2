@@ -17,12 +17,13 @@ const game = () => {
 
   const game = new Phaser.Game(config);
   const e2Time = new E2Time();
+  
   let earth2 = {};
   
   let clock;
 
   function create() {
-    clock = this.add.text(16, 16, "score: 0", {
+    clock = this.add.text(16, 16, "", {
       fontSize: "32px",
       fill: "#fff",
     });
