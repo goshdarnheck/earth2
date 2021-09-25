@@ -1,11 +1,11 @@
 import config from '../config';
 
-const TimeColor = (create) => {
-  const circle = create.add.circle(800 - 30, 600 - 30, 20, 0x00ff00);
+const TimeColor = (scene) => {
+  const circle = scene.add.circle(800 - 30, 600 - 30, 20, 0x00ff00);
   let dn;
 
   if (config.DEBUG) {
-    dn = create.add.text(800 - 100, 600 - 50, '?', {
+    dn = scene.add.text(800 - 100, 600 - 50, '?', {
       fontSize: '32px',
       fill: '#f00',
     });

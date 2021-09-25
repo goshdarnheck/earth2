@@ -1,5 +1,5 @@
 const MS_IN_S = 1000;
-const S_MODIFER = 6000; // makes days roughly 24 minutes?
+const GAME_SECONDS_PER_REAL_SECOND = 60; // makes days roughly 24 minutes?
 
 class E2Time {
   constructor() {
@@ -14,7 +14,7 @@ class E2Time {
 
   add(delta) {
     this.time.elapsed += delta;
-    this.time.seconds += (delta / MS_IN_S) * S_MODIFER;
+    this.time.seconds += (delta / MS_IN_S) * GAME_SECONDS_PER_REAL_SECOND;
 
     if (this.time.seconds >= 60) {
       this.time.seconds = 0;
