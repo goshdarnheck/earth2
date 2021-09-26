@@ -1,11 +1,15 @@
+import Tree from './Tree'
+import Teleport from './Teleport'
+
 const Cell = (scene) => {
   const mainRect = scene.add.rectangle(400, 300, 600, 400, 0x000000)
   const rightRect = scene.add.rectangle(1050, 300, 600, 400, 0x000000, 0.5)
   const leftRect = scene.add.rectangle(-250, 300, 600, 400, 0x000000, 0.5)
   const topRect = scene.add.rectangle(400, -150, 600, 400, 0x000000, 0.5)
   const botRect = scene.add.rectangle(400, 750, 600, 400, 0x000000, 0.5)
+  const objects = []
 
-  const load = (cellInfo, sides) => {
+  const load = (cellInfo, sides, group, overlapGroup) => {
     mainRect.setFillStyle(cellInfo.colour, 1);
 
     if (sides.top) {
@@ -31,10 +35,35 @@ const Cell = (scene) => {
     } else {
       leftRect.setFillStyle(0x000000, 0);
     }
+
+    overlapGroup.clear(true, true);
+    
+    objects.forEach(obj => {
+      obj.destroy()
+    })
+
+    if (cellInfo.objects) {
+      cellInfo.objects.forEach(obj => {
+        let object = null
+
+        if (obj.type === 'Tree') {
+          object = Tree(scene, obj)
+          group.add(object)
+        }
+        
+        if (obj.type === 'Teleport') {
+          object = Teleport(scene, obj)
+          overlapGroup.add(object)
+        }
+
+        objects.push(object);
+      });
+    }
   }
 
   return {
-    load: load
+    load: load,
+    objects: objects
   };
 };
 

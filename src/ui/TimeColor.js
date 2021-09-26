@@ -5,9 +5,9 @@ const TimeColor = (scene) => {
   let dn;
 
   if (config.DEBUG) {
-    dn = scene.add.text(800 - 100, 600 - 50, '?', {
-      fontSize: '32px',
-      fill: '#f00',
+    dn = scene.add.text(800 - 40, 600 - 40, '?', {
+      fontSize: '12px',
+      fill: '#000',
     });
   }
 
@@ -17,33 +17,33 @@ const TimeColor = (scene) => {
       
       if (config.DEBUG && dn) dn.setText(dayNightNormalized);
       
-      let hue = 0;
-      let lightness = 1;
+      let h = 0;
+      let v = 1;
       let s = 1;
 
       if (dayNightNormalized < 0.1) {
-        hue = 0.8;
-        lightness = 0.3;
+        h = 0.8;
+        v = 0.3;
         s = 1;
       } else if (dayNightNormalized < 0.4) {
-        hue = 0.7;
-        lightness = 0.5;
+        h = 0.7;
+        v = 0.5;
         s = 1;
       } else if (dayNightNormalized < 0.6) {
-        hue = 0.1;
-        lightness = 1;
+        h = 0.9;
+        v = 1;
         s = 1;
       } else if (dayNightNormalized < 0.8) {
-        hue = 0.3;
-        lightness = 1;
+        h = 0.15;
+        v = 1;
         s = 0.5;
       } else {
-        hue = 0.15;
-        lightness = 1;
-        s = 1;
+        h = 0.15;
+        v = 1;
+        s = 0.2;
       }
 
-      var color = Phaser.Display.Color.HSVToRGB(hue, s, lightness).color;
+      var color = Phaser.Display.Color.HSVToRGB(h, s, v).color;
       circle.setFillStyle(color, 1);
     },
   };

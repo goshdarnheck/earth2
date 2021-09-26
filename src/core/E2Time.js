@@ -1,5 +1,5 @@
 const MS_IN_S = 1000;
-const GAME_SECONDS_PER_REAL_SECOND = 60; // makes days roughly 24 minutes?
+const GAME_SECONDS_PER_REAL_SECOND = 60; // 60 makes days 24 minutes I think
 
 class E2Time {
   constructor() {

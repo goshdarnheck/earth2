@@ -7,17 +7,17 @@ import Cell from './Cell'
 import world from '../data/world'
 
 const game = () => {
-  console.log(world)
   const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    // physics: {
-    //   default: 'arcade',
-    //   arcade: {
-    //     debug: true
-    //   }
-    // },
+    physics: {
+      default: 'arcade',
+      arcade: {
+        debug: true,
+        checkCollision: { up: true, down: true, left: true, right: true }
+      }
+    },
     scene: {
       preload: preload,
       create: create,
@@ -36,47 +36,18 @@ const game = () => {
   }
   let clock;
   let posText;
-
-  const updateXY = (x, y) => {
-    cellPos.x = x;
-    cellPos.y = y;
-  }
-
-  const loadNorth = () => {
-    if (world[cellPos.x][cellPos.y + 1]) {
-      updateXY(cellPos.x, cellPos.y + 1)
-    }
-  }
-
-  const loadSouth = () => {
-    if (world[cellPos.x][cellPos.y - 1]) {
-      updateXY(cellPos.x, cellPos.y - 1)
-    }
-  }
-
-  const loadWest = () => {
-    if (world[cellPos.x - 1] && world[cellPos.x - 1][cellPos.y]) {
-      updateXY(cellPos.x - 1, cellPos.y)
-    }
-  }
-
-  const loadEast = () => {
-    if (world[cellPos.x + 1] && world[cellPos.x + 1][cellPos.y]) {
-      updateXY(cellPos.x + 1, cellPos.y)
-    }
-  }
+  let loadingNewCell = false;
+  let overlapCollider = null;
 
   function preload() {
-    this.load.image('player', 'textures/Untitled.png');
+    this.load.image('player', 'textures/player.png');
+    this.load.image('evergreen', 'textures/evergreen.png');
   }
 
   function create() {
-    this.input.keyboard.on('keydown_W', loadNorth);
-    this.input.keyboard.on('keydown_S', loadSouth);
-    this.input.keyboard.on('keydown_A', loadWest);
-    this.input.keyboard.on('keydown_D', loadEast);
-
     earth2.cell = Cell(this)
+    earth2.staticCollisionGroup = this.add.group()
+    earth2.overlapGroup = this.add.group()
   
     clock = this.add.text(16, 16, "", {
       fontSize: "32px",
@@ -88,24 +59,57 @@ const game = () => {
     });
 
     earth2.timeColor = TimeColor(this);
-    earth2.cursors = this.input.keyboard.createCursorKeys();
-    earth2.player = Player(this, earth2.cursors);
+    earth2.player = Player(this);
+
+    earth2.cell.load(
+      world[cellPos.x][cellPos.y],
+      {
+        top: world[cellPos.x][cellPos.y + 1],
+        right: world[cellPos.x + 1] ? world[cellPos.x + 1][cellPos.y] : null,
+        bottom: world[cellPos.x][cellPos.y - 1],
+        left: world[cellPos.x - 1] ? world[cellPos.x - 1][cellPos.y] : null
+      },
+      earth2.staticCollisionGroup,
+      earth2.overlapGroup
+    )
+
+    this.physics.add.collider(earth2.player.getSprite(), earth2.staticCollisionGroup, () => {
+      // console.log("collide")
+    });
+
+    overlapCollider = this.physics.add.overlap(earth2.player.getSprite(), earth2.overlapGroup, (player, zone) => {
+      loadingNewCell = true;
+      cellPos = { x: zone.to.x, y: zone.to.y }
+
+      earth2.cell.load(
+        world[cellPos.x][cellPos.y],
+        {
+          top: world[cellPos.x][cellPos.y + 1],
+          right: world[cellPos.x + 1] ? world[cellPos.x + 1][cellPos.y] : null,
+          bottom: world[cellPos.x][cellPos.y - 1],
+          left: world[cellPos.x - 1] ? world[cellPos.x - 1][cellPos.y] : null
+        },
+        earth2.staticCollisionGroup,
+        earth2.overlapGroup
+      );
+      player.setPosition(
+        zone.to.px ? zone.to.px : player.body.position.x + 16,
+        zone.to.py ? zone.to.py : player.body.position.y + 16
+      );
+    }, () => {
+      return !loadingNewCell
+    });
   }
   
   function update(time, delta) {
     e2Time.add(delta);
 
-    earth2.player.update(delta);
+    loadingNewCell = false
 
+    earth2.player.update(delta);
     clock.setText(Clock(e2Time));
     posText.setText(`${world[cellPos.x][cellPos.y].name} ${cellPos.x} ${cellPos.y}`)
     earth2.timeColor.setDayNight(e2Time);
-    earth2.cell.load(world[cellPos.x][cellPos.y], {
-      top: world[cellPos.x][cellPos.y + 1],
-      right: world[cellPos.x + 1] ? world[cellPos.x + 1][cellPos.y] : null,
-      bottom: world[cellPos.x][cellPos.y - 1],
-      left: world[cellPos.x - 1] ? world[cellPos.x - 1][cellPos.y] : null
-    })
   }
 }
 
