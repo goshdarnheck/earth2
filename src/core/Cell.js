@@ -1,15 +1,49 @@
-import Tree from './Tree'
+import Tree from '../objects/static/Tree'
+import Rock from '../objects/static/Rock'
+import Wand from '../objects/pickups/Wand'
 import Teleport from './Teleport'
 
+const TILE_SIZE = 32;
+
 const Cell = (scene) => {
-  const mainRect = scene.add.rectangle(400, 300, 600, 400, 0x000000)
-  const rightRect = scene.add.rectangle(1050, 300, 600, 400, 0x000000, 0.5)
-  const leftRect = scene.add.rectangle(-250, 300, 600, 400, 0x000000, 0.5)
-  const topRect = scene.add.rectangle(400, -150, 600, 400, 0x000000, 0.5)
-  const botRect = scene.add.rectangle(400, 750, 600, 400, 0x000000, 0.5)
+  const mainRect = scene.add.rectangle(TILE_SIZE * 2, 60, TILE_SIZE * 24, TILE_SIZE * 12, 0x000000).setOrigin(0, 0);
+
+  const topRect = scene.add.rectangle(
+    TILE_SIZE * 2,
+    -Math.abs(TILE_SIZE * 12) + 60,
+    TILE_SIZE * 24,
+    TILE_SIZE * 12,
+    0x000000,
+    0.5
+  ).setOrigin(0, 0);
+  const rightRect = scene.add.rectangle(
+    TILE_SIZE * 26,
+    60,
+    TILE_SIZE * 24,
+    TILE_SIZE * 12,
+    0x000000,
+    0.
+  ).setOrigin(0, 0);
+  const botRect = scene.add.rectangle(
+    TILE_SIZE * 2,
+    TILE_SIZE * 12 + 60,
+    TILE_SIZE * 24,
+    TILE_SIZE * 12,
+    0x000000,
+    0.5
+  ).setOrigin(0, 0);
+  const leftRect = scene.add.rectangle(
+    -Math.abs(TILE_SIZE * 22),
+    60,
+    TILE_SIZE * 24,
+    TILE_SIZE * 12,
+    0x000000,
+    0.5
+  ).setOrigin(0, 0);
+
   const objects = []
 
-  const load = (cellInfo, sides, group, overlapGroup) => {
+  const load = (cellInfo, sides, staticCollisionGroup, interactiveCollisionGroup, overlapGroup) => {
     mainRect.setFillStyle(cellInfo.colour, 1);
 
     if (sides.top) {
@@ -19,7 +53,7 @@ const Cell = (scene) => {
     }
 
     if (sides.right) {
-      rightRect.setFillStyle(sides.right.colour, 0.5);
+      rightRect.setFillStyle(sides.right.colour, 1);
     } else {
       rightRect.setFillStyle(0x000000, 0);
     }
@@ -48,7 +82,17 @@ const Cell = (scene) => {
 
         if (obj.type === 'Tree') {
           object = Tree(scene, obj)
-          group.add(object)
+          staticCollisionGroup.add(object)
+        }
+
+        if (obj.type === 'Rock') {
+          object = Rock(scene, obj)
+          staticCollisionGroup.add(object)
+        }
+
+        if (obj.type === 'Wand') {
+          object = Wand(scene, obj)
+          interactiveCollisionGroup.add(object)
         }
         
         if (obj.type === 'Teleport') {

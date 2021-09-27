@@ -1,11 +1,13 @@
 import config from '../config';
 
+const TILE_SIZE = 32;
+
 const TimeColor = (scene) => {
-  const circle = scene.add.circle(800 - 30, 600 - 30, 20, 0x00ff00);
+  const circle = scene.add.circle(TILE_SIZE * 26, TILE_SIZE * 14, 16, 0x00ff00).setOrigin(0, 0);
   let dn;
 
   if (config.DEBUG) {
-    dn = scene.add.text(800 - 40, 600 - 40, '?', {
+    dn = scene.add.text(TILE_SIZE * 26,  TILE_SIZE * 14, '?', {
       fontSize: '12px',
       fill: '#000',
     });

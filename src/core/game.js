@@ -1,3 +1,4 @@
+import config from '../config';
 import Phaser from 'phaser';
 import E2Time from './E2Time'
 import Player from './Player'
@@ -6,15 +7,17 @@ import TimeColor from '../ui/TimeColor'
 import Cell from './Cell'
 import world from '../data/world'
 
+const TILE_SIZE = 32;
+
 const game = () => {
-  const config = {
+  const game = new Phaser.Game({
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 896,
+    height: 504,
     physics: {
       default: 'arcade',
       arcade: {
-        debug: true,
+        debug: config.DEBUG,
         checkCollision: { up: true, down: true, left: true, right: true }
       }
     },
@@ -24,11 +27,9 @@ const game = () => {
       update: update,
     },
     pixelArt: true
-  };
+  });
 
-  const game = new Phaser.Game(config);
   const e2Time = new E2Time();
-  
   let earth2 = {};
   let cellPos = {
     x: 0,
@@ -42,11 +43,14 @@ const game = () => {
   function preload() {
     this.load.image('player', 'textures/player.png');
     this.load.image('evergreen', 'textures/evergreen.png');
+    this.load.image('rock', 'textures/rock.png');
+    this.load.image('wand', 'textures/wand.png');
   }
 
   function create() {
     earth2.cell = Cell(this)
     earth2.staticCollisionGroup = this.add.group()
+    earth2.interactiveCollisionGroup = this.add.group()
     earth2.overlapGroup = this.add.group()
   
     clock = this.add.text(16, 16, "", {
@@ -70,11 +74,13 @@ const game = () => {
         left: world[cellPos.x - 1] ? world[cellPos.x - 1][cellPos.y] : null
       },
       earth2.staticCollisionGroup,
+      earth2.interactiveCollisionGroup,
       earth2.overlapGroup
     )
 
-    this.physics.add.collider(earth2.player.getSprite(), earth2.staticCollisionGroup, () => {
-      // console.log("collide")
+    this.physics.add.collider(earth2.player.getSprite(), earth2.staticCollisionGroup);
+    this.physics.add.collider(earth2.player.getSprite(), earth2.interactiveCollisionGroup, (player, wand) => {
+      wand.destroy();
     });
 
     overlapCollider = this.physics.add.overlap(earth2.player.getSprite(), earth2.overlapGroup, (player, zone) => {
@@ -90,6 +96,7 @@ const game = () => {
           left: world[cellPos.x - 1] ? world[cellPos.x - 1][cellPos.y] : null
         },
         earth2.staticCollisionGroup,
+        earth2.interactiveCollisionGroup,
         earth2.overlapGroup
       );
       player.setPosition(
@@ -108,7 +115,7 @@ const game = () => {
 
     earth2.player.update(delta);
     clock.setText(Clock(e2Time));
-    posText.setText(`${world[cellPos.x][cellPos.y].name} ${cellPos.x} ${cellPos.y}`)
+    posText.setText(`${world[cellPos.x][cellPos.y].name}`)
     earth2.timeColor.setDayNight(e2Time);
   }
 }
