@@ -1,3 +1,3 @@
 export default {
-  DEBUG: false
+  DEBUG: true
 };

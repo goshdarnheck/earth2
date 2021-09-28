@@ -1,5 +1,6 @@
 const Player = (scene) => {
-  const sprite = scene.add.image(200, 200, 'player');
+  const sprite = scene.add.image(600, 200, 'player');
+
   let speed = 200;
   let drag = speed * 4;
   let boost = 1
@@ -14,8 +15,9 @@ const Player = (scene) => {
 
   scene.add.existing(sprite);
   scene.physics.add.existing(sprite);
-
-  sprite.body.setSize(32, 32);
+  
+  // sprite.body.setSize(32, 32);
+  sprite.body.setCircle(16);
   sprite.body.setOffset(0, 0);
   sprite.body.setDrag(drag, drag);
   sprite.body.setCollideWorldBounds(true, 0, 0);
