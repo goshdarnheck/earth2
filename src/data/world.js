@@ -1,4 +1,4 @@
-const TILE_SIZE = 32;
+import { TILE_SIZE } from '../config';
 
 const NORTH_TELEPORT_POS = { x: TILE_SIZE * 2, y: TILE_SIZE + 8, w: TILE_SIZE * 24, h: 10 };
 const SOUTH_TELEPORT_POS = { x: TILE_SIZE * 2, y: TILE_SIZE * 14 + 6, w: TILE_SIZE * 24, h: 10 };

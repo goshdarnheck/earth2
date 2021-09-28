@@ -1,12 +1,10 @@
-import config from '../config';
-
-const TILE_SIZE = 32;
+import { DEBUG, TILE_SIZE } from '../config';
 
 const TimeColor = (scene) => {
   const circle = scene.add.circle(TILE_SIZE * 26, TILE_SIZE * 14, 16, 0x00ff00).setOrigin(0, 0);
   let dn;
 
-  if (config.DEBUG) {
+  if (DEBUG) {
     dn = scene.add.text(TILE_SIZE * 26,  TILE_SIZE * 14, '?', {
       fontSize: '12px',
       fill: '#000',
@@ -17,7 +15,7 @@ const TimeColor = (scene) => {
     setDayNight: (e2Time) => {
       const dayNightNormalized = e2Time.getDayNightNormalized();
       
-      if (config.DEBUG && dn) dn.setText(dayNightNormalized);
+      if (DEBUG && dn) dn.setText(dayNightNormalized);
       
       let h = 0;
       let v = 1;

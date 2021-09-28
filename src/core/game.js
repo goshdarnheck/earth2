@@ -3,11 +3,10 @@ import Phaser from 'phaser';
 import E2Time from './E2Time'
 import Player from './Player'
 import Clock from '../ui/Clock'
+import Debug from '../ui/Debug'
 import TimeColor from '../ui/TimeColor'
 import Cell from './Cell'
 import world from '../data/world'
-
-const TILE_SIZE = 32;
 
 const game = () => {
   const game = new Phaser.Game({
@@ -35,7 +34,10 @@ const game = () => {
     x: 0,
     y: 0
   }
-  let clock;
+  let ui = {
+    clock: null,
+    debug: null
+  };
   let posText;
   let loadingNewCell = false;
   let overlapCollider = null;
@@ -48,23 +50,19 @@ const game = () => {
   }
 
   function create() {
+    // GAME SETUP
     earth2.cell = Cell(this)
     earth2.staticCollisionGroup = this.add.group()
     earth2.interactiveCollisionGroup = this.add.group()
     earth2.overlapGroup = this.add.group()
-  
-    clock = this.add.text(16, 16, "", {
-      fontSize: "32px",
-      fill: "#fff",
-    });
-    posText = this.add.text(16, 48, "", {
-      fontSize: "16px",
-      fill: "#c60",
-    });
-
     earth2.timeColor = TimeColor(this);
     earth2.player = Player(this);
 
+    // UI
+    ui.clock = Clock(this, e2Time);
+    ui.debug = Debug(this, world[cellPos.x][cellPos.y]);
+
+    // LOAD CELL FROM WORLD DATA
     earth2.cell.load(
       world[cellPos.x][cellPos.y],
       {
@@ -78,11 +76,11 @@ const game = () => {
       earth2.overlapGroup
     )
 
+    // ADD COLLIDERS
     this.physics.add.collider(earth2.player.getSprite(), earth2.staticCollisionGroup);
     this.physics.add.collider(earth2.player.getSprite(), earth2.interactiveCollisionGroup, (player, wand) => {
       wand.destroy();
     });
-
     overlapCollider = this.physics.add.overlap(earth2.player.getSprite(), earth2.overlapGroup, (player, zone) => {
       loadingNewCell = true;
       cellPos = { x: zone.to.x, y: zone.to.y }
@@ -114,8 +112,8 @@ const game = () => {
     loadingNewCell = false
 
     earth2.player.update(delta);
-    clock.setText(Clock(e2Time));
-    posText.setText(`${world[cellPos.x][cellPos.y].name}`)
+    ui.clock.update(e2Time);
+    ui.debug.update(world[cellPos.x][cellPos.y])
     earth2.timeColor.setDayNight(e2Time);
   }
 }

@@ -1,9 +1,8 @@
+import { TILE_SIZE } from '../config';
 import Tree from '../objects/static/Tree'
 import Rock from '../objects/static/Rock'
 import Wand from '../objects/pickups/Wand'
 import Teleport from './Teleport'
-
-const TILE_SIZE = 32;
 
 const Cell = (scene) => {
   const mainRect = scene.add.rectangle(TILE_SIZE * 2, 60, TILE_SIZE * 24, TILE_SIZE * 12, 0x000000).setOrigin(0, 0);

@@ -1,6 +1,7 @@
 const Player = (scene) => {
   const sprite = scene.add.image(600, 200, 'player');
 
+  let health = 100;
   let speed = 200;
   let drag = speed * 4;
   let boost = 1
@@ -55,7 +56,9 @@ const Player = (scene) => {
       }
     },
     getBody: () => sprite.body,
-    getSprite: () => sprite
+    getSprite: () => sprite,
+    getHealth: () => health,
+    setHealth: (newHealth) => health = newHealth
   }
 }
 
