@@ -2,6 +2,8 @@ import { TILE_SIZE } from '../config';
 import Tree from '../objects/static/Tree'
 import Rock from '../objects/static/Rock'
 import Wand from '../objects/pickups/Wand'
+import Rat from '../objects/baddies/Rat'
+import Potion from '../objects/pickups/Potion'
 import Teleport from './Teleport'
 
 const Cell = (scene) => {
@@ -21,7 +23,7 @@ const Cell = (scene) => {
     TILE_SIZE * 24,
     TILE_SIZE * 12,
     0x000000,
-    0.
+    0.5
   ).setOrigin(0, 0);
   const botRect = scene.add.rectangle(
     TILE_SIZE * 2,
@@ -42,7 +44,7 @@ const Cell = (scene) => {
 
   const objects = []
 
-  const load = (cellInfo, sides, staticCollisionGroup, interactiveCollisionGroup, overlapGroup) => {
+  const load = (cellInfo, sides, staticCollisionGroup, interactiveCollisionGroup, overlapGroup, detectGroup) => {
     mainRect.setFillStyle(cellInfo.colour, 1);
 
     if (sides.top) {
@@ -52,7 +54,7 @@ const Cell = (scene) => {
     }
 
     if (sides.right) {
-      rightRect.setFillStyle(sides.right.colour, 1);
+      rightRect.setFillStyle(sides.right.colour, 0.5);
     } else {
       rightRect.setFillStyle(0x000000, 0);
     }
@@ -69,7 +71,7 @@ const Cell = (scene) => {
       leftRect.setFillStyle(0x000000, 0);
     }
 
-    overlapGroup.clear(true, true);
+    // overlapGroup.clear(true, true);
     
     objects.forEach(obj => {
       obj.destroy()
@@ -91,6 +93,16 @@ const Cell = (scene) => {
 
         if (obj.type === 'Wand') {
           object = Wand(scene, obj)
+          interactiveCollisionGroup.add(object)
+        }
+
+        if (obj.type === 'Potion') {
+          object = Potion(scene, obj)
+          interactiveCollisionGroup.add(object)
+        }
+
+        if (obj.type === 'Rat') {
+          object = Rat(scene, obj, detectGroup)
           interactiveCollisionGroup.add(object)
         }
         

@@ -1,10 +1,9 @@
 const DEBUG = true;
 const TILE_SIZE = 32;
 
-
 export default {
-  DEBUG: true,
-  TILE_SIZE: 32
+  DEBUG: DEBUG,
+  TILE_SIZE: TILE_SIZE
 };
 
 export { DEBUG, TILE_SIZE }

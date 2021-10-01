@@ -14,19 +14,24 @@ export default [
   [
     {
       name: "0 0 START",
-      colour: 0x676d53,
+      colour: 0x4f870a,
       objects: [
         { type: 'Tree', x: 200, y: 100 },
         { type: 'Tree', x: 232, y: 100 },
         { type: 'Rock', x: 400, y: 350 },
         { type: 'Wand', x: 450, y: 350 },
+        { type: 'Rat', x: 500, y: 200 },
+        { type: 'Rat', x: 400, y: 200 },
+        { type: 'Rat', x: 300, y: 200 },
+        { type: 'Rat', x: 200, y: 200 },
+        { type: 'Potion', x: 200, y: 400 },
         { type: 'Teleport', ...NORTH_TELEPORT_POS, to: { x: 0, y: 1, py: PLAYER_BOTTOM }},
         { type: 'Teleport', ...EAST_TELEPORT_POS, to: { x: 1, y: 0, px: PLAYER_LEFT }}
       ]
     },
     {
       name: "0 1",
-      colour: 0xff6600,
+      colour: 0x4f870a,
       objects: [
         { type: 'Tree', x: 150, y: 100 },
         { type: 'Tree', x: 200, y: 100 },
@@ -48,7 +53,7 @@ export default [
   [
     {
       name: "1 0",
-      colour: 0x0000ff,
+      colour: 0x4f870a,
       objects: [
         { type: 'Teleport', ...NORTH_TELEPORT_POS, to: { x: 1, y: 1, py: PLAYER_BOTTOM }},
         { type: 'Teleport', ...WEST_TELEPORT_POS, to: { x: 0, y: 0, px: PLAYER_RIGHT }},
