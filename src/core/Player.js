@@ -42,6 +42,15 @@ const Player = (scene) => {
   sprite.setDefaultVelocityY = (y) => { defaultVelocity.y = y };
   sprite.setDefending = (value) => { defending = value }
   sprite.getDefending = () => defending
+  sprite.collideWith = (other) => {
+    if (other.name === 'rat') {
+      if (!sprite.getInvincible()) {
+        sprite.setInvincible(300);
+        sprite.setPlayerInput(300);
+        sprite.reduceHealth(other.collisionDamage);
+      }
+    }
+  }
 
   sprite.defend = scene.add.circle(600, 200, 64, 0xff9900).setOrigin(0.5, 0.5);
   sprite.defend.setDepth(9);

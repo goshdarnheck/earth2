@@ -60,13 +60,14 @@ const game = () => {
     earth2.interactiveCollisionGroup = this.add.group();
     earth2.overlapGroup = this.add.group();
     earth2.detectGroup = this.add.group();
-    earth2.timeColor = TimeColor(this);
+
     earth2.player = Player(this);
 
     // UI
     ui.clock = Clock(this, e2Time);
     ui.debug = Debug(this, world[state.cellPos.x][state.cellPos.y]);
     ui.health = Health(this, earth2.player.getHealth());
+    ui.timeColor = TimeColor(this);
 
     // LOAD CELL FROM WORLD DATA
     earth2.cell.load(
@@ -87,12 +88,13 @@ const game = () => {
     this.physics.add.collider(earth2.player, earth2.staticCollisionGroup);
     this.physics.add.overlap(earth2.player.defend, earth2.interactiveCollisionGroup, (defend, other) => {
       if (earth2.player.getDefending()) {
-        console.log('defense hit!', other);
+        // console.log('defense hit!', other);
         other.destroy();
       }
     });
     this.physics.add.collider(earth2.player, earth2.interactiveCollisionGroup, (player, other) => {
       player.setDefaultVelocity(0, 0);
+      // TODO: this could be changed to move at a more "realistic" angle
       if (player.x < other.x) {
         player.setDefaultVelocityX(-100)
       }
@@ -113,12 +115,7 @@ const game = () => {
       }
       
       if (other.collisionDamage) {
-        if (!player.getInvincible()) {
-          player.setInvincible(300);
-          player.setPlayerInput(300);
-          player.reduceHealth(other.collisionDamage);
-          // player.body.velocity.x = -300;
-        }
+        player.collideWith(other);
       }
     });
     this.physics.add.overlap(earth2.player, earth2.overlapGroup, (player, zone) => {
@@ -162,7 +159,7 @@ const game = () => {
     ui.clock.update(e2Time);
     ui.health.update(earth2.player.getHealth())
     ui.debug.update(world[state.cellPos.x][state.cellPos.y])
-    earth2.timeColor.setDayNight(e2Time);
+    ui.timeColor.setDayNight(e2Time);
   }
 }
 

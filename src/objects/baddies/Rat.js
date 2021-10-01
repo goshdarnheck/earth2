@@ -6,6 +6,7 @@ const Rat = (scene, obj, detectGroup) => {
   scene.add.existing(sprite);
   scene.physics.add.existing(sprite);
 
+  sprite.name = 'rat';
   sprite.body.setCircle(16);
   sprite.body.setOffset(0, 0);
   sprite.body.setCollideWorldBounds(true, 0, 0);
