@@ -2,14 +2,18 @@ const Player = (scene) => {
   const sprite = scene.add.image(600, 200, 'player');
 
   const MAX_SPEED = 400;
-  let health = 100;
+  const DEFEND_MP_COST = 10;
+  const MAX_MP = 100;
+  let hp = 10;
+  let mp = 100;
   let speed = 200;
   let drag = speed * 4;
   let items = [];
   let invincibleTimer = 0;
   let playerInputTimer = 0;
-  let defaultVelocity = { x: 0, y: 0 }
-  let defending = false;
+  let defaultVelocity = { x: 0, y: 0 };
+  let defendCooldown = 0;
+  let mpRefreshCooldown = 0;
 
   const keyW = scene.input.keyboard.addKey('W');
   const keyA = scene.input.keyboard.addKey('A');
@@ -33,28 +37,27 @@ const Player = (scene) => {
   sprite.getInvincible = () => invincibleTimer > 0;
   sprite.setPlayerInput = (seconds) => playerInputTimer = seconds;
   sprite.getPlayerInput = () => playerInputTimer > 0;
-  sprite.reduceHealth = (damage) => { health = health - damage }
-  sprite.getHealth = () => health;
+  sprite.reduceHp = (damage) => { hp = Math.max(0, hp - damage) }
+  sprite.getHp = () => hp;
+  sprite.getMp = () => mp;
   sprite.addItem = (item) => { items.push(item) }
   sprite.getItems = () => items;
   sprite.setDefaultVelocity = (x, y) => { defaultVelocity = { x: x, y: y } };
   sprite.setDefaultVelocityX = (x) => { defaultVelocity.x = x };
   sprite.setDefaultVelocityY = (y) => { defaultVelocity.y = y };
-  sprite.setDefending = (value) => { defending = value }
-  sprite.getDefending = () => defending
   sprite.collideWith = (other) => {
     if (other.name === 'rat') {
       if (!sprite.getInvincible()) {
         sprite.setInvincible(300);
         sprite.setPlayerInput(300);
-        sprite.reduceHealth(other.collisionDamage);
+        sprite.reduceHp(other.collisionDamage);
       }
     }
   }
 
   sprite.defend = scene.add.circle(600, 200, 64, 0xff9900).setOrigin(0.5, 0.5);
   sprite.defend.setDepth(9);
-  sprite.defend.setVisible(false);
+  sprite.defend.setVisible(true);
   
   scene.add.existing(sprite.defend);
   scene.physics.add.existing(sprite.defend);
@@ -66,51 +69,82 @@ const Player = (scene) => {
     let boost = 1
     let slow = 1
 
-    // attack
-    if (keySpace.isDown) {
-      sprite.setDefending(true);
-      sprite.defend.setVisible(true);
-    } else {
-      sprite.setDefending(false);
-      sprite.defend.setVisible(false);
+    mpRefreshCooldown -= delta;
+    if (mpRefreshCooldown <= 0) {
+      mp = Math.min(MAX_MP, mp + 1);
+      mpRefreshCooldown = 500;
     }
 
-    if (defending)
-
-    // GO FAST
-    if (keyEnter.isDown) {
-      // slow = 2
-      // boost = 1.6
+    if (defendCooldown) {
+      defendCooldown = Math.max(0, defendCooldown - delta);
     }
 
-    currentSpeed = speed * boost - (speed * slow - speed);
+    const isAlive = hp > 0;
 
-    if (invincibleTimer > 0) {
-      invincibleTimer = Math.max(invincibleTimer - delta, 0);
-      sprite.setAlpha(0.5);
-    } else {
-      sprite.setAlpha(1);
-    }
+    if (isAlive) {
+      // DEFEND ABILITY
+      if (keySpace.isDown) {
+        if (mp > DEFEND_MP_COST && defendCooldown === 0) {
+          defendCooldown = 300;
+          mp = mp - DEFEND_MP_COST;
+          const them = scene.physics.overlapCirc(sprite.x, sprite.y, 64, true, true);
 
-    if (playerInputTimer > 0) {
-      playerInputTimer = Math.max(playerInputTimer - delta, 0);
-      sprite.body.setVelocity(defaultVelocity.x, defaultVelocity.y)
+          // TODO: make this hit move than rats!
+          if (them && them.length > 0) {
+            const hitObjects = them.filter(object => object && object.gameObject && object.gameObject.name === 'rat')
+
+            hitObjects.forEach(hitObject => {
+              hitObject.gameObject.destroy();
+            })
+          }
+          sprite.defend.setPosition(sprite.x, sprite.y);
+          sprite.defend.setVisible(true);
+        } else {
+          sprite.defend.setVisible(false);
+        }
+      } else {
+        sprite.defend.setVisible(false);
+      }
+
+      // GO FAST
+      if (keyEnter.isDown) {
+        // slow = 2
+        boost = 1.6
+      }
+
+      currentSpeed = speed * boost - (speed * slow - speed);
+
+      if (invincibleTimer > 0) {
+        invincibleTimer = Math.max(invincibleTimer - delta, 0);
+        sprite.setAlpha(0.5);
+      } else {
+        sprite.setAlpha(1);
+      }
+
+      if (playerInputTimer > 0) {
+        playerInputTimer = Math.max(playerInputTimer - delta, 0);
+        sprite.body.setVelocity(defaultVelocity.x, defaultVelocity.y)
+      } else {
+        if (keyW.isDown) {
+          sprite.body.velocity.y = -Math.abs(currentSpeed);
+        }
+    
+        if (keyS.isDown) {
+          sprite.body.velocity.y = Math.abs(currentSpeed);
+        }
+    
+        if (keyA.isDown) {
+          sprite.body.velocity.x = -Math.abs(currentSpeed);
+        }
+        
+        if (keyD.isDown) {
+          sprite.body.velocity.x = Math.abs(currentSpeed);
+        }
+      }
     } else {
-      if (keyW.isDown) {
-        sprite.body.velocity.y = -Math.abs(currentSpeed);
-      }
-  
-      if (keyS.isDown) {
-        sprite.body.velocity.y = Math.abs(currentSpeed);
-      }
-  
-      if (keyA.isDown) {
-        sprite.body.velocity.x = -Math.abs(currentSpeed);
-      }
-      
-      if (keyD.isDown) {
-        sprite.body.velocity.x = Math.abs(currentSpeed);
-      }
+      // DEAD
+      sprite.setAlpha(0);
+      sprite.body.enable = false;
     }
 
     sprite.defend.setPosition(sprite.x, sprite.y);

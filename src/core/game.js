@@ -5,7 +5,8 @@ import Player from './Player'
 import Clock from '../ui/Clock'
 import Debug from '../ui/Debug'
 import TimeColor from '../ui/TimeColor'
-import Health from '../ui/Health'
+import Hp from '../ui/Hp'
+import Mp from '../ui/Mp'
 import Cell from './Cell'
 import world from '../data/world'
 
@@ -40,7 +41,8 @@ const game = () => {
   let ui = {
     clock: null,
     debug: null,
-    health: null
+    hp: null,
+    mp: null
   };
   let loadingNewCell = false;
 
@@ -66,7 +68,8 @@ const game = () => {
     // UI
     ui.clock = Clock(this, e2Time);
     ui.debug = Debug(this, world[state.cellPos.x][state.cellPos.y]);
-    ui.health = Health(this, earth2.player.getHealth());
+    ui.hp = Hp(this, earth2.player.getHp());
+    ui.mp = Mp(this, earth2.player.getMp());
     ui.timeColor = TimeColor(this);
 
     // LOAD CELL FROM WORLD DATA
@@ -86,12 +89,6 @@ const game = () => {
 
     // ADD COLLIDERS
     this.physics.add.collider(earth2.player, earth2.staticCollisionGroup);
-    this.physics.add.overlap(earth2.player.defend, earth2.interactiveCollisionGroup, (defend, other) => {
-      if (earth2.player.getDefending()) {
-        // console.log('defense hit!', other);
-        other.destroy();
-      }
-    });
     this.physics.add.collider(earth2.player, earth2.interactiveCollisionGroup, (player, other) => {
       player.setDefaultVelocity(0, 0);
       // TODO: this could be changed to move at a more "realistic" angle
@@ -157,7 +154,8 @@ const game = () => {
     })
     
     ui.clock.update(e2Time);
-    ui.health.update(earth2.player.getHealth())
+    ui.hp.update(earth2.player.getHp())
+    ui.mp.update(earth2.player.getMp())
     ui.debug.update(world[state.cellPos.x][state.cellPos.y])
     ui.timeColor.setDayNight(e2Time);
   }
