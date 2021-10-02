@@ -1,11 +1,13 @@
+// TODO: player needs a "state" of being hit
 const Player = (scene) => {
   const sprite = scene.add.image(600, 200, 'player');
 
   const MAX_SPEED = 400;
   const DEFEND_MP_COST = 10;
-  const MAX_MP = 100;
-  let hp = 10;
-  let mp = 100;
+  let angle = 0;
+  let maxMp = 50;
+  let hp = 50;
+  let mp = maxMp;
   let speed = 200;
   let drag = speed * 4;
   let items = [];
@@ -27,6 +29,7 @@ const Player = (scene) => {
   
   sprite.setDepth(10);
   sprite.id = 'Player';
+  sprite.name = 'player';
   sprite.body.setCircle(16);
   sprite.body.setOffset(0, 0);
   sprite.body.setDrag(drag, drag);
@@ -42,12 +45,16 @@ const Player = (scene) => {
   sprite.getMp = () => mp;
   sprite.addItem = (item) => { items.push(item) }
   sprite.getItems = () => items;
-  sprite.setDefaultVelocity = (x, y) => { defaultVelocity = { x: x, y: y } };
+  sprite.setDefaultVelocity = (vector2) => { defaultVelocity = vector2 };
   sprite.setDefaultVelocityX = (x) => { defaultVelocity.x = x };
   sprite.setDefaultVelocityY = (y) => { defaultVelocity.y = y };
   sprite.collideWith = (other) => {
     if (other.name === 'rat') {
       if (!sprite.getInvincible()) {
+        const radBetweenObjects = Phaser.Math.Angle.Between(sprite.x, sprite.y, other.x, other.y);
+        const velocityAwayFromObject = scene.physics.velocityFromAngle(Phaser.Math.RadToDeg(radBetweenObjects) - 180, 200);
+        sprite.setDefaultVelocity(velocityAwayFromObject);
+        sprite.angle = Phaser.Math.RadToDeg(radBetweenObjects) + 90;
         sprite.setInvincible(300);
         sprite.setPlayerInput(300);
         sprite.reduceHp(other.collisionDamage);
@@ -55,6 +62,7 @@ const Player = (scene) => {
     }
   }
 
+  // okay clean this up please lol
   sprite.defend = scene.add.circle(600, 200, 64, 0xff9900).setOrigin(0.5, 0.5);
   sprite.defend.setDepth(9);
   sprite.defend.setVisible(true);
@@ -71,7 +79,7 @@ const Player = (scene) => {
 
     mpRefreshCooldown -= delta;
     if (mpRefreshCooldown <= 0) {
-      mp = Math.min(MAX_MP, mp + 1);
+      mp = Math.min(maxMp, mp + 1);
       mpRefreshCooldown = 500;
     }
 
@@ -125,20 +133,30 @@ const Player = (scene) => {
         playerInputTimer = Math.max(playerInputTimer - delta, 0);
         sprite.body.setVelocity(defaultVelocity.x, defaultVelocity.y)
       } else {
+        let moving = false;
         if (keyW.isDown) {
           sprite.body.velocity.y = -Math.abs(currentSpeed);
+          moving = true;
         }
     
         if (keyS.isDown) {
           sprite.body.velocity.y = Math.abs(currentSpeed);
+          moving = true;
         }
     
         if (keyA.isDown) {
           sprite.body.velocity.x = -Math.abs(currentSpeed);
+          moving = true;
         }
         
         if (keyD.isDown) {
           sprite.body.velocity.x = Math.abs(currentSpeed);
+          moving = true;
+        }
+
+        // SET SPRITE ANGLE TO THE ANGLE OF THE VELOCITY - PLAYER MOVEMENT DIRECTION
+        if (moving) {
+          angle = Phaser.Math.RadToDeg(Math.atan2(sprite.body.velocity.y, sprite.body.velocity.x) + Math.PI/2)
         }
       }
     } else {
@@ -147,6 +165,7 @@ const Player = (scene) => {
       sprite.body.enable = false;
     }
 
+    sprite.angle = angle;
     sprite.defend.setPosition(sprite.x, sprite.y);
   }
 

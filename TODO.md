@@ -1,3 +1,1 @@
 - pass world into Cell and let it figure out what cells around it to draw
-- add cooldown to "defense" ability
-- code defense overlap like rat follow (scene.physics.overlapCirc()

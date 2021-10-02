@@ -13,8 +13,8 @@ import world from '../data/world'
 const game = () => {
   const game = new Phaser.Game({
     type: Phaser.AUTO,
-    width: 896,
-    height: 504,
+    width: config.GAME_WIDTH,
+    height: config.GAME_HEIGHT,
     physics: {
       default: 'arcade',
       arcade: {
@@ -89,30 +89,16 @@ const game = () => {
 
     // ADD COLLIDERS
     this.physics.add.collider(earth2.player, earth2.staticCollisionGroup);
+    this.physics.add.collider(earth2.interactiveCollisionGroup, earth2.staticCollisionGroup);
     this.physics.add.collider(earth2.player, earth2.interactiveCollisionGroup, (player, other) => {
-      player.setDefaultVelocity(0, 0);
-      // TODO: this could be changed to move at a more "realistic" angle
-      if (player.x < other.x) {
-        player.setDefaultVelocityX(-100)
-      }
-      if (player.y > other.y) {
-        player.setDefaultVelocityY(100)
-      }
-      if (player.x > other.x) {
-        player.setDefaultVelocityX(100)
-      }
-      if (player.y < other.y) {
-        player.setDefaultVelocityY(-100)
-      }
-      //
-
       if (other.isPickup) {
         other.destroy();
-        player.addItem(other.pickupItem)
+        player.addItem(other.pickupItem);
       }
       
       if (other.collisionDamage) {
         player.collideWith(other);
+        other.collideWith(player);
       }
     });
     this.physics.add.overlap(earth2.player, earth2.overlapGroup, (player, zone) => {
@@ -140,7 +126,7 @@ const game = () => {
       return !loadingNewCell
     });
 
-    earth2.interactiveCollisionGroup.children.entries.forEach(thing => console.log(thing))
+    // earth2.interactiveCollisionGroup.children.entries.forEach(thing => console.log(thing))
   }
   
   function update(time, delta) {
@@ -149,8 +135,10 @@ const game = () => {
     loadingNewCell = false
 
     earth2.player.update(delta);
-    earth2.interactiveCollisionGroup.children.entries.forEach(thing => {
-      if (thing.update) thing.update(delta)
+    earth2.interactiveCollisionGroup.children.entries.forEach(object => {
+      if (object.update) {
+        object.update(delta)
+      }
     })
     
     ui.clock.update(e2Time);

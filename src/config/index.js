@@ -1,10 +1,14 @@
 const DEBUG = true;
 const TILE_SIZE = 32;
+const GAME_WIDTH = 896;
+const GAME_HEIGHT = 504;
 
 export default {
   DEBUG: DEBUG,
-  TILE_SIZE: TILE_SIZE
+  TILE_SIZE: TILE_SIZE,
+  GAME_WIDTH: GAME_WIDTH,
+  GAME_HEIGHT: GAME_HEIGHT
 };
 
-export { DEBUG, TILE_SIZE }
+export { DEBUG, TILE_SIZE, GAME_WIDTH, GAME_HEIGHT }
 

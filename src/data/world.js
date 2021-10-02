@@ -10,6 +10,12 @@ const PLAYER_RIGHT = TILE_SIZE * 26 - 16;
 const PLAYER_BOTTOM = TILE_SIZE * 14 - 16;
 const PLAYER_LEFT = TILE_SIZE * 2 + 16;
 
+const generateDefaultTeleports = (options) => {
+  return {
+
+  }
+}
+
 export default [
   [
     {
@@ -36,6 +42,10 @@ export default [
         { type: 'Tree', x: 150, y: 100 },
         { type: 'Tree', x: 200, y: 100 },
         { type: 'Tree', x: 300, y: 300 },
+        { type: 'Rat', x: 100, y: 100 },
+        { type: 'Rat', x: 200, y: 200 },
+        { type: 'Rat', x: 500, y: 200 },
+        { type: 'Rat', x: 700, y: 400 },
         { type: 'Teleport', ...SOUTH_TELEPORT_POS, to: { x: 0, y: 0, py: PLAYER_TOP }},
         { type: 'Teleport', ...NORTH_TELEPORT_POS, to: { x: 0, y: 2, py: PLAYER_BOTTOM }},
         { type: 'Teleport', ...EAST_TELEPORT_POS, to: { x: 1, y: 1, px: PLAYER_LEFT }}
@@ -43,7 +53,7 @@ export default [
     },
     {
       name: "0 2",
-      colour: 0xff3300,
+      colour: 0x4f870a,
       objects: [
         { type: 'Teleport', ...SOUTH_TELEPORT_POS, to: { x: 0, y: 1, py: PLAYER_TOP }},
         { type: 'Teleport', ...EAST_TELEPORT_POS, to: { x: 1, y: 2, px: PLAYER_LEFT }}
@@ -53,7 +63,7 @@ export default [
   [
     {
       name: "1 0",
-      colour: 0x4f870a,
+      colour: 0x779944,
       objects: [
         { type: 'Teleport', ...NORTH_TELEPORT_POS, to: { x: 1, y: 1, py: PLAYER_BOTTOM }},
         { type: 'Teleport', ...WEST_TELEPORT_POS, to: { x: 0, y: 0, px: PLAYER_RIGHT }},
@@ -61,7 +71,7 @@ export default [
     },
     {
       name: "1 1",
-      colour: 0x3300ff,
+      colour: 0x779944,
       objects: [
         { type: 'Teleport', ...NORTH_TELEPORT_POS, to: { x: 1, y: 2, py: PLAYER_BOTTOM }},
         { type: 'Teleport', ...WEST_TELEPORT_POS, to: { x: 0, y: 1, px: PLAYER_RIGHT }},
@@ -70,7 +80,7 @@ export default [
     },
     {
       name: "1 2",
-      colour: 0x003366,
+      colour: 0x999944,
       objects: [
         { type: 'Teleport', ...WEST_TELEPORT_POS, to: { x: 0, y: 2, px: PLAYER_RIGHT }},
         { type: 'Teleport', ...SOUTH_TELEPORT_POS, to: { x: 1, y: 1, py: PLAYER_TOP }},
