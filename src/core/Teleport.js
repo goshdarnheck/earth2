@@ -7,7 +7,7 @@ const Teleport = (scene, obj) => {
   zone.body.setAllowGravity(false);
   zone.body.moves = false;
 
-  zone.to = obj.to
+  zone.to = obj.to;
 
   return zone;
 }

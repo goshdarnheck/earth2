@@ -62,7 +62,6 @@ const game = () => {
     earth2.interactiveCollisionGroup = this.add.group();
     earth2.overlapGroup = this.add.group();
     earth2.detectGroup = this.add.group();
-
     earth2.player = Player(this);
 
     // UI
@@ -74,13 +73,8 @@ const game = () => {
 
     // LOAD CELL FROM WORLD DATA
     earth2.cell.load(
-      world[state.cellPos.x][state.cellPos.y],
-      {
-        top: world[state.cellPos.x][state.cellPos.y + 1],
-        right: world[state.cellPos.x + 1] ? world[state.cellPos.x + 1][state.cellPos.y] : null,
-        bottom: world[state.cellPos.x][state.cellPos.y - 1],
-        left: world[state.cellPos.x - 1] ? world[state.cellPos.x - 1][state.cellPos.y] : null
-      },
+      state.cellPos,
+      world,
       earth2.staticCollisionGroup,
       earth2.interactiveCollisionGroup,
       earth2.overlapGroup,
@@ -106,13 +100,8 @@ const game = () => {
       state.cellPos = { x: zone.to.x, y: zone.to.y };
 
       earth2.cell.load(
-        world[state.cellPos.x][state.cellPos.y],
-        {
-          top: world[state.cellPos.x][state.cellPos.y + 1],
-          right: world[state.cellPos.x + 1] ? world[state.cellPos.x + 1][state.cellPos.y] : null,
-          bottom: world[state.cellPos.x][state.cellPos.y - 1],
-          left: world[state.cellPos.x - 1] ? world[state.cellPos.x - 1][state.cellPos.y] : null
-        },
+        state.cellPos,
+        world,
         earth2.staticCollisionGroup,
         earth2.interactiveCollisionGroup,
         earth2.overlapGroup,
@@ -125,8 +114,6 @@ const game = () => {
     }, () => {
       return !loadingNewCell
     });
-
-    // earth2.interactiveCollisionGroup.children.entries.forEach(thing => console.log(thing))
   }
   
   function update(time, delta) {

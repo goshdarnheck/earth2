@@ -6,7 +6,7 @@ const Rat = (scene, obj) => {
   let randomMoveToCooldown = 0;
   let randomMoveTo = { x: 0, y: 0 };
   let followMoveTo = null;
-  // let hp = 10;
+  let hp = 10;
 
   scene.add.existing(sprite);
   scene.physics.add.existing(sprite);
@@ -21,6 +21,14 @@ const Rat = (scene, obj) => {
   sprite.collideWith = (other) => {
     if (other.name === 'player') {
       console.log("rat knows it touched player");
+    }
+  }
+
+  sprite.hitWith = (power, type) => {
+    hp = hp - power;
+
+    if (hp <= 0) {
+      sprite.destroy();
     }
   }
 
@@ -52,7 +60,7 @@ const Rat = (scene, obj) => {
     }
     
     if (followMoveTo) {
-      scene.physics.moveToObject(sprite, followMoveTo, speed);
+      scene.physics.moveToObject(sprite, followMoveTo, speed + 20);
     } else {
       scene.physics.moveTo(
         sprite,

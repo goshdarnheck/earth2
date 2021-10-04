@@ -1,1 +1,8 @@
-- pass world into Cell and let it figure out what cells around it to draw
+- use state machine for player, or start with rat? or new one
+- make defense "holdable" and drain mp slower, and smaller radius
+- create default magic attack
+- add stamina + real dash
+- create melee attack (slows player, short range, uses stamina)
+- show buttons w/ mapping on screen
+- add particle effects for hits etc.
+- move default teleport generation to Cell.js, just leave ['n'...]

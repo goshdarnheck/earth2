@@ -3,18 +3,18 @@ const Player = (scene) => {
   const sprite = scene.add.image(600, 200, 'player');
 
   const MAX_SPEED = 400;
-  const DEFEND_MP_COST = 10;
+  const DEFEND_MP_COST = 20;
   let angle = 0;
-  let maxMp = 50;
+  let maxMp = 100;
   let hp = 50;
   let mp = maxMp;
   let speed = 200;
-  let drag = speed * 4;
+  let drag = speed * 5;
   let items = [];
   let invincibleTimer = 0;
   let playerInputTimer = 0;
   let defaultVelocity = { x: 0, y: 0 };
-  let defendCooldown = 0;
+  let isDefending = false;
   let mpRefreshCooldown = 0;
 
   const keyW = scene.input.keyboard.addKey('W');
@@ -35,6 +35,11 @@ const Player = (scene) => {
   sprite.body.setDrag(drag, drag);
   sprite.body.setCollideWorldBounds(true, 0, 0);
   sprite.body.setMaxSpeed(MAX_SPEED);
+
+  // okay clean this up please lol
+  sprite.defend = scene.add.circle(600, 200, 20, 0xff9900).setOrigin(0.5, 0.5);
+  sprite.defend.setDepth(9);
+  sprite.defend.setVisible(true);
   
   sprite.setInvincible = (seconds) => invincibleTimer = seconds;
   sprite.getInvincible = () => invincibleTimer > 0;
@@ -50,7 +55,7 @@ const Player = (scene) => {
   sprite.setDefaultVelocityY = (y) => { defaultVelocity.y = y };
   sprite.collideWith = (other) => {
     if (other.name === 'rat') {
-      if (!sprite.getInvincible()) {
+      if (!sprite.getInvincible() && !isDefending) {
         const radBetweenObjects = Phaser.Math.Angle.Between(sprite.x, sprite.y, other.x, other.y);
         const velocityAwayFromObject = scene.physics.velocityFromAngle(Phaser.Math.RadToDeg(radBetweenObjects) - 180, 200);
         sprite.setDefaultVelocity(velocityAwayFromObject);
@@ -61,17 +66,6 @@ const Player = (scene) => {
       }
     }
   }
-
-  // okay clean this up please lol
-  sprite.defend = scene.add.circle(600, 200, 64, 0xff9900).setOrigin(0.5, 0.5);
-  sprite.defend.setDepth(9);
-  sprite.defend.setVisible(true);
-  
-  scene.add.existing(sprite.defend);
-  scene.physics.add.existing(sprite.defend);
-
-  sprite.defend.body.setCircle(64);
-
   sprite.update = (delta) => {
     let currentSpeed = speed;
     let boost = 1
@@ -80,11 +74,7 @@ const Player = (scene) => {
     mpRefreshCooldown -= delta;
     if (mpRefreshCooldown <= 0) {
       mp = Math.min(maxMp, mp + 1);
-      mpRefreshCooldown = 500;
-    }
-
-    if (defendCooldown) {
-      defendCooldown = Math.max(0, defendCooldown - delta);
+      mpRefreshCooldown = 2000;
     }
 
     const isAlive = hp > 0;
@@ -92,26 +82,30 @@ const Player = (scene) => {
     if (isAlive) {
       // DEFEND ABILITY
       if (keySpace.isDown) {
-        if (mp > DEFEND_MP_COST && defendCooldown === 0) {
-          defendCooldown = 300;
-          mp = mp - DEFEND_MP_COST;
-          const them = scene.physics.overlapCirc(sprite.x, sprite.y, 64, true, true);
+        if (mp >= DEFEND_MP_COST * delta / 1000) {
+          isDefending = true;
+          mp = mp - DEFEND_MP_COST * delta / 1000;
+          const them = scene.physics.overlapCirc(sprite.x, sprite.y, 20, true, true);
 
           // TODO: make this hit move than rats!
           if (them && them.length > 0) {
             const hitObjects = them.filter(object => object && object.gameObject && object.gameObject.name === 'rat')
 
             hitObjects.forEach(hitObject => {
-              hitObject.gameObject.destroy();
+              // hitObject.gameObject.destroy();
+              if (hitObject.gameObject && hitObject.gameObject.hitWith) {
+                hitObject.gameObject.hitWith(1, 'magic');
+              }
             })
           }
-          sprite.defend.setPosition(sprite.x, sprite.y);
           sprite.defend.setVisible(true);
         } else {
           sprite.defend.setVisible(false);
+          isDefending = false;
         }
       } else {
         sprite.defend.setVisible(false);
+        isDefending = false;
       }
 
       // GO FAST

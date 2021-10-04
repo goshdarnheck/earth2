@@ -10,10 +10,26 @@ const PLAYER_RIGHT = TILE_SIZE * 26 - 16;
 const PLAYER_BOTTOM = TILE_SIZE * 14 - 16;
 const PLAYER_LEFT = TILE_SIZE * 2 + 16;
 
-const generateDefaultTeleports = (options) => {
-  return {
+const generateTeleports = (position, sides) => {
+  const teleports = [];
 
+  if (sides.includes('n')) {
+    teleports.push({ type: 'Teleport', ...NORTH_TELEPORT_POS, to: { x: position.x, y: position.y + 1, py: PLAYER_BOTTOM }})
   }
+
+  if (sides.includes('e')) {
+    teleports.push({ type: 'Teleport', ...EAST_TELEPORT_POS, to: { x: position.x + 1 , y: position.y, px: PLAYER_LEFT }})
+  }
+
+  if (sides.includes('s')) {
+    teleports.push({ type: 'Teleport', ...SOUTH_TELEPORT_POS, to: { x: position.x, y: position.y - 1, py: PLAYER_TOP }})
+  }
+
+  if (sides.includes('w')) {
+    teleports.push({ type: 'Teleport', ...WEST_TELEPORT_POS, to: { x: position.x - 1, y: position.y, px: PLAYER_RIGHT }})
+  }
+
+  return teleports;
 }
 
 export default [
@@ -31,8 +47,7 @@ export default [
         { type: 'Rat', x: 300, y: 200 },
         { type: 'Rat', x: 200, y: 200 },
         { type: 'Potion', x: 200, y: 400 },
-        { type: 'Teleport', ...NORTH_TELEPORT_POS, to: { x: 0, y: 1, py: PLAYER_BOTTOM }},
-        { type: 'Teleport', ...EAST_TELEPORT_POS, to: { x: 1, y: 0, px: PLAYER_LEFT }}
+        ...generateTeleports({ x: 0, y: 0 }, ['n', 'e'])
       ]
     },
     {
@@ -46,17 +61,14 @@ export default [
         { type: 'Rat', x: 200, y: 200 },
         { type: 'Rat', x: 500, y: 200 },
         { type: 'Rat', x: 700, y: 400 },
-        { type: 'Teleport', ...SOUTH_TELEPORT_POS, to: { x: 0, y: 0, py: PLAYER_TOP }},
-        { type: 'Teleport', ...NORTH_TELEPORT_POS, to: { x: 0, y: 2, py: PLAYER_BOTTOM }},
-        { type: 'Teleport', ...EAST_TELEPORT_POS, to: { x: 1, y: 1, px: PLAYER_LEFT }}
+        ...generateTeleports({ x: 0, y: 1 }, ['n', 'e', 's'])
       ]
     },
     {
       name: "0 2",
       colour: 0x4f870a,
       objects: [
-        { type: 'Teleport', ...SOUTH_TELEPORT_POS, to: { x: 0, y: 1, py: PLAYER_TOP }},
-        { type: 'Teleport', ...EAST_TELEPORT_POS, to: { x: 1, y: 2, px: PLAYER_LEFT }}
+        ...generateTeleports({ x: 0, y: 2 }, ['e', 's'])
       ]
     }
   ],
@@ -65,25 +77,44 @@ export default [
       name: "1 0",
       colour: 0x779944,
       objects: [
-        { type: 'Teleport', ...NORTH_TELEPORT_POS, to: { x: 1, y: 1, py: PLAYER_BOTTOM }},
-        { type: 'Teleport', ...WEST_TELEPORT_POS, to: { x: 0, y: 0, px: PLAYER_RIGHT }},
+        ...generateTeleports({ x: 1, y: 0 }, ['n', 'e', 'w'])
       ]
     },
     {
       name: "1 1",
       colour: 0x779944,
       objects: [
-        { type: 'Teleport', ...NORTH_TELEPORT_POS, to: { x: 1, y: 2, py: PLAYER_BOTTOM }},
-        { type: 'Teleport', ...WEST_TELEPORT_POS, to: { x: 0, y: 1, px: PLAYER_RIGHT }},
-        { type: 'Teleport', ...SOUTH_TELEPORT_POS, to: { x: 1, y: 0, py: PLAYER_TOP }},
+        ...generateTeleports({ x: 1, y: 1 }, ['n', 'e', 's', 'w'])
       ]
     },
     {
       name: "1 2",
       colour: 0x999944,
       objects: [
-        { type: 'Teleport', ...WEST_TELEPORT_POS, to: { x: 0, y: 2, px: PLAYER_RIGHT }},
-        { type: 'Teleport', ...SOUTH_TELEPORT_POS, to: { x: 1, y: 1, py: PLAYER_TOP }},
+        ...generateTeleports({ x: 1, y: 2 }, ['w', 'e', 's'])
+      ]
+    }
+  ],
+  [
+    {
+      name: "2 0",
+      colour: 0x779944,
+      objects: [
+        ...generateTeleports({ x: 2, y: 0 }, ['n', 'w'])
+      ]
+    },
+    {
+      name: "2 1",
+      colour: 0x779944,
+      objects: [
+        ...generateTeleports({ x: 2, y: 1 }, ['n', 'w', 's'])
+      ]
+    },
+    {
+      name: "2 2",
+      colour: 0x999944,
+      objects: [
+        ...generateTeleports({ x: 2, y: 2 }, ['w', 's'])
       ]
     }
   ]

@@ -44,8 +44,23 @@ const Cell = (scene) => {
 
   const objects = []
 
-  const load = (cellInfo, sides, staticCollisionGroup, interactiveCollisionGroup, overlapGroup, detectGroup) => {
-    mainRect.setFillStyle(cellInfo.colour, 1);
+  const load = (
+    cellPos,
+    world,
+    staticCollisionGroup,
+    interactiveCollisionGroup,
+    overlapGroup,
+    detectGroup
+  ) => {
+    const cellInfo = world[cellPos.x][cellPos.y];
+    const sides = {
+      top: world[cellPos.x][cellPos.y + 1],
+      right: world[cellPos.x + 1] ? world[cellPos.x + 1][cellPos.y] : null,
+      bottom: world[cellPos.x][cellPos.y - 1],
+      left: world[cellPos.x - 1] ? world[cellPos.x - 1][cellPos.y] : null
+    }
+    
+    mainRect.setFillStyle(world[cellPos.x][cellPos.y].colour, 1);
 
     if (sides.top) {
       topRect.setFillStyle(sides.top.colour, 0.5);
