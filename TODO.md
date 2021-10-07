@@ -1,5 +1,4 @@
 - use state machine for player, or start with rat? or new one
-- make defense "holdable" and drain mp slower, and smaller radius
 - create default magic attack
 - add stamina + real dash
 - create melee attack (slows player, short range, uses stamina)

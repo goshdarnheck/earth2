@@ -1,9 +1,19 @@
+import defendAbility from './abilities/defend'
+
 // TODO: player needs a "state" of being hit
 const Player = (scene) => {
-  const sprite = scene.add.image(600, 200, 'player');
-
   const MAX_SPEED = 400;
   const DEFEND_MP_COST = 20;
+  const keyW = scene.input.keyboard.addKey('W');
+  const keyA = scene.input.keyboard.addKey('A');
+  const keyS = scene.input.keyboard.addKey('S');
+  const keyD = scene.input.keyboard.addKey('D');
+  const keySpace = scene.input.keyboard.addKey('SPACE');
+  const keyEnter = scene.input.keyboard.addKey('ENTER');
+  const abilities = {
+    defend: defendAbility(scene, 20)
+  }
+
   let angle = 0;
   let maxMp = 100;
   let hp = 50;
@@ -17,16 +27,9 @@ const Player = (scene) => {
   let isDefending = false;
   let mpRefreshCooldown = 0;
 
-  const keyW = scene.input.keyboard.addKey('W');
-  const keyA = scene.input.keyboard.addKey('A');
-  const keyS = scene.input.keyboard.addKey('S');
-  const keyD = scene.input.keyboard.addKey('D');
-  const keySpace = scene.input.keyboard.addKey('SPACE');
-  const keyEnter = scene.input.keyboard.addKey('ENTER');
-
+  const sprite = scene.add.image(600, 200, 'player');
   scene.add.existing(sprite);
   scene.physics.add.existing(sprite);
-  
   sprite.setDepth(10);
   sprite.id = 'Player';
   sprite.name = 'player';
@@ -36,11 +39,6 @@ const Player = (scene) => {
   sprite.body.setCollideWorldBounds(true, 0, 0);
   sprite.body.setMaxSpeed(MAX_SPEED);
 
-  // okay clean this up please lol
-  sprite.defend = scene.add.circle(600, 200, 20, 0xff9900).setOrigin(0.5, 0.5);
-  sprite.defend.setDepth(9);
-  sprite.defend.setVisible(true);
-  
   sprite.setInvincible = (seconds) => invincibleTimer = seconds;
   sprite.getInvincible = () => invincibleTimer > 0;
   sprite.setPlayerInput = (seconds) => playerInputTimer = seconds;
@@ -53,6 +51,7 @@ const Player = (scene) => {
   sprite.setDefaultVelocity = (vector2) => { defaultVelocity = vector2 };
   sprite.setDefaultVelocityX = (x) => { defaultVelocity.x = x };
   sprite.setDefaultVelocityY = (y) => { defaultVelocity.y = y };
+  
   sprite.collideWith = (other) => {
     if (other.name === 'rat') {
       if (!sprite.getInvincible() && !isDefending) {
@@ -66,6 +65,7 @@ const Player = (scene) => {
       }
     }
   }
+
   sprite.update = (delta) => {
     let currentSpeed = speed;
     let boost = 1
@@ -81,32 +81,14 @@ const Player = (scene) => {
 
     if (isAlive) {
       // DEFEND ABILITY
-      if (keySpace.isDown) {
-        if (mp >= DEFEND_MP_COST * delta / 1000) {
-          isDefending = true;
-          mp = mp - DEFEND_MP_COST * delta / 1000;
-          const them = scene.physics.overlapCirc(sprite.x, sprite.y, 20, true, true);
-
-          // TODO: make this hit move than rats!
-          if (them && them.length > 0) {
-            const hitObjects = them.filter(object => object && object.gameObject && object.gameObject.name === 'rat')
-
-            hitObjects.forEach(hitObject => {
-              // hitObject.gameObject.destroy();
-              if (hitObject.gameObject && hitObject.gameObject.hitWith) {
-                hitObject.gameObject.hitWith(1, 'magic');
-              }
-            })
-          }
-          sprite.defend.setVisible(true);
-        } else {
-          sprite.defend.setVisible(false);
-          isDefending = false;
-        }
+      if (keySpace.isDown && mp >= DEFEND_MP_COST * delta / 1000) {
+        isDefending = true;
+        mp = mp - DEFEND_MP_COST * delta / 1000;
       } else {
-        sprite.defend.setVisible(false);
         isDefending = false;
       }
+
+      abilities.defend.update(isDefending, sprite.x, sprite.y);
 
       // GO FAST
       if (keyEnter.isDown) {
@@ -155,12 +137,11 @@ const Player = (scene) => {
       }
     } else {
       // DEAD
-      sprite.setAlpha(0);
+      sprite.setAlpha(0.1);
       sprite.body.enable = false;
     }
 
     sprite.angle = angle;
-    sprite.defend.setPosition(sprite.x, sprite.y);
   }
 
   return sprite
