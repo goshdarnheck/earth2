@@ -1,7 +1,7 @@
-const defendAbility = (scene, size) => {
-  const defend = scene.add.circle(600, 200, 20, 0xff9900).setOrigin(0.5, 0.5);
-  defend.setDepth(9);
-  defend.setVisible(false);
+const barrierAbility = (scene, size, mpCost) => {
+  const barrier = scene.add.circle(600, 200, 20, 0xff9900).setOrigin(0.5, 0.5);
+  barrier.setDepth(9);
+  barrier.setVisible(false);
   
   const ability = {
     update: (active, x, y) => {
@@ -18,16 +18,17 @@ const defendAbility = (scene, size) => {
             }
           })
         }
-        defend.setVisible(true);
+
+        barrier.setVisible(true);
       } else {
-        defend.setVisible(false);
+        barrier.setVisible(false);
       }
 
-      defend.setPosition(x, y);
+      barrier.setPosition(x, y);
     }
   };
 
   return ability;
 }
 
-export default defendAbility;
+export default barrierAbility;

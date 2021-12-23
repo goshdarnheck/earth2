@@ -77,6 +77,8 @@ export default [
       name: "1 0",
       colour: 0x779944,
       objects: [
+        { type: 'Mouse', x: 400, y: 400 },
+        { type: 'Mouse', x: 300, y: 400 },
         ...generateTeleports({ x: 1, y: 0 }, ['n', 'e', 'w'])
       ]
     },

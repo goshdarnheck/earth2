@@ -9,7 +9,7 @@ const Rat = (scene, obj) => {
   let followMoveTo = null;
   let hp = 10;
   sprite.abilities = {
-    melee: meleeAbility(scene, 30, 20)
+    melee: meleeAbility(scene, sprite, 30, 20)
   }
 
   scene.add.existing(sprite);
@@ -25,7 +25,7 @@ const Rat = (scene, obj) => {
 
   sprite.collideWith = (other) => {
     if (other.name === 'player') {
-      console.log("rat knows it touched player");
+      console.log("mouse knows it touched player");
     }
   }
 
@@ -33,8 +33,15 @@ const Rat = (scene, obj) => {
     hp = hp - power;
 
     if (hp <= 0) {
+      sprite.abilities.melee.destroy();
       sprite.destroy();
     }
+  }
+
+  sprite.kill = () => {
+    console.log("mouse kill")
+    sprite.destroy();
+    sprite.abilities.melee.destroy();
   }
 
   sprite.update = (delta) => {
@@ -77,12 +84,6 @@ const Rat = (scene, obj) => {
         speed
       );
     }
-
-    //
-    // if close_to_player
-    //   byte attack
-    //   use melee ability?
-    //  player.hitWith(5, physical)
 
     const angle = Math.atan2(sprite.body.velocity.y, sprite.body.velocity.x) + Math.PI/2
     sprite.angle = Phaser.Math.RadToDeg(angle);

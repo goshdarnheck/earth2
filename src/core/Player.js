@@ -1,4 +1,5 @@
-import defendAbility from './abilities/defend'
+import barrierAbility from './abilities/barrier'
+import meleeAbility from './abilities/melee'
 
 // TODO: player needs a "state" of being hit
 const Player = (scene) => {
@@ -11,7 +12,8 @@ const Player = (scene) => {
   const keySpace = scene.input.keyboard.addKey('SPACE');
   const keyEnter = scene.input.keyboard.addKey('ENTER');
   const abilities = {
-    defend: defendAbility(scene, 20)
+    barrier: barrierAbility(scene, 20),
+    melee: meleeAbility(scene, 30, 20)
   }
 
   let angle = 0;
@@ -19,7 +21,7 @@ const Player = (scene) => {
   let hp = 50;
   let mp = maxMp;
   let speed = 200;
-  let drag = speed * 5;
+  let drag = speed * 10;
   let items = [];
   let invincibleTimer = 0;
   let playerInputTimer = 0;
@@ -27,7 +29,7 @@ const Player = (scene) => {
   let isDefending = false;
   let mpRefreshCooldown = 0;
 
-  const sprite = scene.add.image(600, 200, 'player');
+  const sprite = scene.add.image(100, 100, 'player');
   scene.add.existing(sprite);
   scene.physics.add.existing(sprite);
   sprite.setDepth(10);
@@ -53,23 +55,28 @@ const Player = (scene) => {
   sprite.setDefaultVelocityY = (y) => { defaultVelocity.y = y };
   
   sprite.collideWith = (other) => {
-    if (other.name === 'rat') {
+    if (other.type === 'enemy') {
       if (!sprite.getInvincible() && !isDefending) {
-        const radBetweenObjects = Phaser.Math.Angle.Between(sprite.x, sprite.y, other.x, other.y);
-        const velocityAwayFromObject = scene.physics.velocityFromAngle(Phaser.Math.RadToDeg(radBetweenObjects) - 180, 200);
-        sprite.setDefaultVelocity(velocityAwayFromObject);
-        sprite.angle = Phaser.Math.RadToDeg(radBetweenObjects) + 90;
-        sprite.setInvincible(300);
-        sprite.setPlayerInput(300);
-        sprite.reduceHp(other.collisionDamage);
+        // const radBetweenObjects = Phaser.Math.Angle.Between(sprite.x, sprite.y, other.x, other.y);
+        // const velocityAwayFromObject = scene.physics.velocityFromAngle(Phaser.Math.RadToDeg(radBetweenObjects) - 180, 200);
+        // sprite.setDefaultVelocity(velocityAwayFromObject);
+        // sprite.angle = Phaser.Math.RadToDeg(radBetweenObjects) + 90;
+        // sprite.setInvincible(300);
+        // sprite.setPlayerInput(300);
+        // sprite.reduceHp(other.collisionDamage);
       }
+    }
+  }
+
+  sprite.hitWith = (power, type) => {
+    if (!sprite.getInvincible() && !isDefending) {
+        sprite.setInvincible(300);
+        sprite.reduceHp(power);
     }
   }
 
   sprite.update = (delta) => {
     let currentSpeed = speed;
-    let boost = 1
-    let slow = 1
 
     mpRefreshCooldown -= delta;
     if (mpRefreshCooldown <= 0) {
@@ -80,7 +87,7 @@ const Player = (scene) => {
     const isAlive = hp > 0;
 
     if (isAlive) {
-      // DEFEND ABILITY
+      // DEFEND ABILITY todo move this into defend function
       if (keySpace.isDown && mp >= DEFEND_MP_COST * delta / 1000) {
         isDefending = true;
         mp = mp - DEFEND_MP_COST * delta / 1000;
@@ -88,15 +95,8 @@ const Player = (scene) => {
         isDefending = false;
       }
 
-      abilities.defend.update(isDefending, sprite.x, sprite.y);
-
-      // GO FAST
-      if (keyEnter.isDown) {
-        // slow = 2
-        boost = 1.6
-      }
-
-      currentSpeed = speed * boost - (speed * slow - speed);
+      abilities.barrier.update(isDefending, sprite.x, sprite.y);
+      abilities.melee.update(delta, keyEnter.isDown, sprite.x, sprite.y, sprite.angle);
 
       if (invincibleTimer > 0) {
         invincibleTimer = Math.max(invincibleTimer - delta, 0);

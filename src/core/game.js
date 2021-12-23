@@ -34,7 +34,7 @@ const game = () => {
   let earth2 = {};
   let state = {
     cellPos: {
-      x: 0,
+      x: 1,
       y: 0
     }
   }

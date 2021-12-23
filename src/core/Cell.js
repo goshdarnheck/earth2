@@ -3,6 +3,7 @@ import Tree from '../objects/static/Tree'
 import Rock from '../objects/static/Rock'
 import Wand from '../objects/pickups/Wand'
 import Rat from '../objects/baddies/Rat'
+import Mouse from '../objects/baddies/Mouse'
 import Potion from '../objects/pickups/Potion'
 import Teleport from './Teleport'
 
@@ -89,7 +90,12 @@ const Cell = (scene) => {
     // overlapGroup.clear(true, true);
     
     objects.forEach(obj => {
-      obj.destroy()
+      console.log(obj)
+      if (obj.type === 'enemy') {
+        obj.kill();
+      } else {
+        obj.destroy()
+      }
     })
 
     if (cellInfo.objects) {
@@ -118,6 +124,11 @@ const Cell = (scene) => {
 
         if (obj.type === 'Rat') {
           object = Rat(scene, obj, detectGroup)
+          interactiveCollisionGroup.add(object)
+        }
+
+        if (obj.type === 'Mouse') {
+          object = Mouse(scene, obj, detectGroup)
           interactiveCollisionGroup.add(object)
         }
         
